@@ -3,6 +3,7 @@ name: Create ServiceNow Change
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,6 +25,3 @@ jobs:
           devops-integration-token: ${{ secrets.SN_DEVOPS_INTEGRATION_TOKEN }}
           instance-url: ${{ secrets.SN_INSTANCE_URL }}
           tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
-          context-github: ${{ toJSON(github) }}
-          job-name: 'create_change'
-          change-request: '{"attributes":{"short_description":"Automated deployment change","description":"Auto-created by GitHub Actions pipeline","implementation_plan":"Automated deployment via GitHub Actions","backout_plan":"Revert to previous commit","test_plan":"Automated tests run in CI pipeline"}}'
