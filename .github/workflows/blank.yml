@@ -1,6 +1,19 @@
+name: Deploy with Change
+
+on:
+  push:
+    branches: [ main ]
+
 jobs:
-  deploy:
-    needs: build   # the upstream job that must succeed first
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: echo "build steps here"
+
+  create_change:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: ServiceNow Change
@@ -10,5 +23,5 @@ jobs:
           instance-url: ${{ secrets.SN_INSTANCE_URL }}
           tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
           context-github: ${{ toJSON(github) }}
-          job-name: 'deploy'   # must match the job name shown in the Actions run
-          change-request: '{"attributes":{"short_description":"Automated Deploy Change"}}'
+          job-name: 'create_change'
+          change-request: '{"attributes":{"short_description":"Automated deployment change","description":"Auto-created by GitHub Actions pipeline"}}'
