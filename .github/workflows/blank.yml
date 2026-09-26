@@ -1,25 +1,29 @@
 name: Create ServiceNow Change
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  create-change:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
+      - name: Build
+        run: echo "Build steps go here"
 
-      - name: Create ServiceNow Change Request
-        uses: ServiceNow/servicenow-devops-change@main
+  create_change:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create ServiceNow Change
+        uses: ServiceNow/servicenow-devops-change@v6.1.0
         with:
-          devops-integration-user-name: ${{ secrets.SN_DEVOPS_USER }}
-          devops-integration-user-password: ${{ secrets.SN_DEVOPS_PASSWORD }}
+          devops-integration-token: ${{ secrets.SN_DEVOPS_INTEGRATION_TOKEN }}
           instance-url: ${{ secrets.SN_INSTANCE_URL }}
-          tool-id: ${{ secrets.SN_TOOL_ID }}
+          tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
           context-github: ${{ toJSON(github) }}
-          job-name: "GitHub Deployment"
+          job-name: 'create_change'
+          change-request: '{"attributes":{"short_description":"Automated deployment change","description":"Auto-created by GitHub Actions pipeline","type":"normal"}}'
